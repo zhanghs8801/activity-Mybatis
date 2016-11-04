@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.say.anything.dao.ModuleDao">
+ 	<resultMap type="cn.say.anything.bean.Module" id="moduleMapper">  
+        <id property="id" column="id" javaType="int" jdbcType="INTEGER"/>  
+        <result property="id" column="name" javaType="int" jdbcType="INTEGER"/>  
+        <result property="moduleId" column="moduleId" javaType="String" jdbcType="VARCHAR"/>  
+        <result property="moduleName" column="moduleName" javaType="String" jdbcType="VARCHAR"/>  
+        <result property="createTime" column="createtime" javaType="java.util.Date" jdbcType="DATE"/>  
+    </resultMap>  
+	<select id="getModules" resultMap="moduleMapper">
+		select * from act_module;
+	</select>
+</mapper>
