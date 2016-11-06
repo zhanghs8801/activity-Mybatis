@@ -1,4 +1,4 @@
-package cn.say.anything.service.impl.user;
+package cn.say.anything.service.impl;
 
 
 import java.util.List;

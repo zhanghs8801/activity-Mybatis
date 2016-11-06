@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -58,11 +58,16 @@ public class PageHelper implements Interceptor {
 			Configuration configuration = (Configuration) metaObject.getValue("delegate.configuration");  
 			String pageSqlId = configuration.getVariables().getProperty("pageQuerySqlId");
 			MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
-			if(!StringUtils.equals(mappedStatement.getId(),pageSqlId)) {  
+			if(!mappedStatement.getId().endsWith(pageSqlId)) {  
 				// 如果不是分页查询，则跳过
 				return invocation.proceed();
 			}
 			BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
+			ParamMap<Object> paramMap = (ParamMap<Object>) boundSql.getParameterObject();
+			int pageNO = (Integer) paramMap.get("pageNo");
+			int pageSize = (Integer) paramMap.get("pageSize");
+			pageInfo.setCurrentPage(pageNO);
+			pageInfo.setPageSize(pageSize);
 			String sql = boundSql.getSql();
 			String pageSql = buildPage(sql, pageInfo);
 			metaObject.setValue("delegate.boundSql.sql", pageSql);
@@ -89,6 +94,7 @@ public class PageHelper implements Interceptor {
 
 	public String buildPage(String sql, QueryPageInfo page) {
 		StringBuilder pageSql = new StringBuilder(100);
+		sql = sql.substring(0, sql.indexOf("limit"));
 		String beginrow = String.valueOf((page.getCurrentPage() - 1) * page.getPageSize());
 		pageSql.append(sql);
 		pageSql.append(" limit " + beginrow + "," + page.getPageSize());

@@ -8,7 +8,7 @@ public class Permission implements Serializable {
 	private int id;
 	private String username;
 	private String moduleId;
-	private Date createtime;
+	private Date createTime;
 
 	public int getId() {
 		return id;
@@ -34,11 +34,11 @@ public class Permission implements Serializable {
 		this.moduleId = moduleId;
 	}
 
-	public Date getCreatetime() {
-		return createtime;
+	public Date getCreateTime() {
+		return createTime;
 	}
-
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
+	
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 }

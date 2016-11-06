@@ -11,13 +11,13 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Service;
 
 import cn.say.anything.tool.Constant;
+import cn.say.anything.tool.MD5Util;
 
 @Service
 public class BackendFormAuthenticationFilter extends FormAuthenticationFilter{
@@ -36,9 +36,7 @@ public class BackendFormAuthenticationFilter extends FormAuthenticationFilter{
 	@Override
 	protected String getPassword(ServletRequest request) {
 		String password = super.getPassword(request);
-		Md5Hash md5Hash = new Md5Hash(password);
-		String tokenCredentials = md5Hash.toString();
-		return tokenCredentials;
+		return MD5Util.encryptMD5(password);
 	}
 	
 	@Override
