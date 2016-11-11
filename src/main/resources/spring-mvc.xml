@@ -14,7 +14,7 @@
 	
 	<task:annotation-driven/>
 
-	<context:component-scan base-package="cn.say.anything" use-default-filters="false">
+	<context:component-scan base-package="app.memory" use-default-filters="false">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
 	</context:component-scan>
@@ -68,7 +68,7 @@
 						<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
 							<property name="classesToBeBound">
 								<list>
-									<value>cn.say.anything.bean.BackendUser</value>
+									<value>app.memory.bean.BackendUser</value>
 								</list>
 							</property>
 						</bean>

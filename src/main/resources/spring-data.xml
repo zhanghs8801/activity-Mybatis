@@ -19,7 +19,7 @@
     </bean>  
   
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
-        <property name="basePackage" value="cn.say.anything.dao" />  
+        <property name="basePackage" value="app.memory.dao" />  
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />  
     </bean>  
     

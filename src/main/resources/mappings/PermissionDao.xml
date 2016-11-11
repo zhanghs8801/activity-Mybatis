@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.say.anything.dao.user.BackendUserDao">
- 	<resultMap type="cn.say.anything.bean.BackendUser" id="userMapper">  
+<mapper namespace="app.memory.dao.PermissionDao">
+ 	<resultMap type="app.memory.bean.Permission" id="permissionMapper">  
         <id property="id" column="id" javaType="int" jdbcType="INTEGER"/>  
         <result property="id" column="name" javaType="int" jdbcType="INTEGER"/>  
         <result property="username" column="username" javaType="String" jdbcType="VARCHAR"/>  
-        <result property="password" column="password" javaType="String" jdbcType="VARCHAR"/>  
-        <result property="roleId" column="role_id" javaType="int" jdbcType="INTEGER"/>  
-        <result property="updateTime" column="updattime" javaType="java.util.Date" jdbcType="DATE"/>  
+        <result property="moduleId" column="module_id" javaType="String" jdbcType="VARCHAR"/>  
         <result property="createTime" column="createtime" javaType="java.util.Date" jdbcType="DATE"/>  
     </resultMap>  
 
-    <select id="queryPageInfo" resultMap="userMapper">  
-        select * from act_sys_user limit #{pageNo, jdbcType=INTEGER} , #{pageSize, jdbcType=INTEGER}  
+    <select id="getAllPermissions" resultMap="permissionMapper">  
+        select * from act_permission
     </select>  
     
-    <select id="queryUserByName" resultMap="userMapper">
-        SELECT * FROM act_sys_user WHERE username = #{userName}
+    <select id="getPermission" resultMap="permissionMapper">
+        SELECT * FROM act_permission WHERE username = #{userName} AND moduleId=#{moduleId}
+    </select>
+    
+     <select id="getPermissions" resultMap="permissionMapper">
+        SELECT * FROM act_permission WHERE username = #{userName}
     </select>
 </mapper>

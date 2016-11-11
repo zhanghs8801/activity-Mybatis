@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.say.anything.dao.BackendUserDao">
- 	<resultMap type="cn.say.anything.bean.BackendUser" id="userMapper">  
+<mapper namespace="app.memory.dao.BackendUserDao">
+ 	<resultMap type="app.memory.bean.BackendUser" id="userMapper">  
         <id property="id" column="id" javaType="int" jdbcType="INTEGER"/>  
         <result property="id" column="name" javaType="int" jdbcType="INTEGER"/>  
         <result property="username" column="username" javaType="String" jdbcType="VARCHAR"/>  
@@ -24,7 +24,7 @@
         SELECT * FROM act_sys_user WHERE id = #{id}    
     </select>
     
-    <select id="queryAllUser" resultType="cn.say.anything.bean.BackendUser">
+    <select id="queryAllUser" resultType="app.memory.bean.BackendUser">
     	SELECT * FROM act_sys_user
     </select>
 </mapper>

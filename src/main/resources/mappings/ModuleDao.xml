@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.say.anything.dao.ModuleDao">
- 	<resultMap type="cn.say.anything.bean.Module" id="moduleMapper">  
+<mapper namespace="app.memory.dao.ModuleDao">
+ 	<resultMap type="app.memory.bean.Module" id="moduleMapper">  
         <id property="id" column="id" javaType="int" jdbcType="INTEGER"/>  
         <result property="id" column="name" javaType="int" jdbcType="INTEGER"/>  
         <result property="moduleId" column="moduleId" javaType="String" jdbcType="VARCHAR"/>  

@@ -14,6 +14,6 @@
         <setting name="defaultExecutorType" value="REUSE" />   
     </settings>   
     <plugins>
-    	<plugin interceptor="cn.say.anything.tool.PageHelper" />
+    	<plugin interceptor="app.memory.tool.PageHelper" />
     </plugins>
 </configuration>  
