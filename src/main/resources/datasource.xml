@@ -6,10 +6,10 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 		
     <bean id="dataSource2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
-        <property name="url"><value>jdbc:mysql://localhost:3306/activity?characterEncoding=utf-8</value></property>      
-        <property name="username"><value>root</value></property>
-        <property name="password"><value>root</value></property> 
+         <property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
+       <property name="url"><value>jdbc:mysql://masterdb.ac.idc.pplive.cn:3306/pplive_activity?characterEncoding=utf-8</value></property>      
+         <property name="username"><value>pp_activity</value></property>
+        <property name="password"><value>aAh!jqAw^jASFerqj</value></property> 
         <property name="maxActive"><value>100</value></property>
         <property name="maxIdle"><value>10</value></property>
         <property name="maxWait"><value>120000</value></property>
@@ -24,5 +24,3 @@
         </property>
     </bean>
 </beans>
-
-

@@ -5,7 +5,7 @@
 	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
@@ -14,12 +14,79 @@
 	
 	<task:annotation-driven/>
 
-	<mvc:annotation-driven />
 	<context:component-scan base-package="cn.say.anything" use-default-filters="false">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
 	</context:component-scan>
 
+<!-- 	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			将StringHttpMessageConverter的默认编码设为UTF-8
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+		    	<constructor-arg value="UTF-8" />
+			</bean>
+			将Jackson2HttpMessageConverter的默认格式化输出设为true
+			 
+			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+	               <property name="prettyPrint" value="true"/>
+	               <property name="supportedMediaTypes">
+					<list>
+						<value>text/html;charset=UTF-8</value>
+					</list>
+				</property>
+	           </bean>
+	           			
+	 	</mvc:message-converters>
+	</mvc:annotation-driven> -->
+	
+	<mvc:annotation-driven/>
+	
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="mediaTypes">
+			<map>
+				<entry key="xml" value="application/xml" />
+				<entry key="json" value="application/json" />
+			</map>
+		</property>
+		<property name="defaultContentType" value="text/html" />
+		<property name="ignoreAcceptHeader" value="true" />
+		<property name="favorPathExtension" value="true" />
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" id="viewResolver">
+					<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+					<property name="prefix" value="/" />
+					<property name="suffix" value=".jsp" />
+					<property name="cache" value="true" />
+				</bean>
+			</list>
+		</property>
+		<property name="defaultViews">
+			<list>
+				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+					<constructor-arg>
+						<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+							<property name="classesToBeBound">
+								<list>
+									<value>cn.say.anything.bean.BackendUser</value>
+								</list>
+							</property>
+						</bean>
+					</constructor-arg>
+					<!-- <property name="marshaller">
+						<bean class="org.springframework.oxm.xstream.XStreamMarshaller" />
+					</property> -->
+				</bean>
+				<!-- json view -->
+				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+			</list>
+		</property>
+	</bean>
+	
+				
+	<!-- 容器默认的DefaultServletHandler处理 所有静态内容与无RequestMapping处理的URL	-->
+	<mvc:default-servlet-handler/>
+	
     <mvc:resources mapping="/css/**" location="/css/" />
 	<mvc:resources mapping="/images/**" location="/images/" />
 	<mvc:resources mapping="/js/**" location="/js/" /> 
@@ -27,14 +94,7 @@
 	<mvc:resources mapping="/newjs/**" location="/newjs/" /> 
     <mvc:resources mapping="/img/**" location="/img/" /> 
     <mvc:resources mapping="/newcss/**" location="/newcss/" /> 
-	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"
-		id="viewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/" />
-		<property name="suffix" value=".jsp" />
-		<property name="cache" value="true" />
-	</bean>
+	
 	
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
     	<property name="maxUploadSize" value="10485760" />  
@@ -51,4 +111,6 @@
 	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
 		<property name="securityManager" ref="securityManager" />
 	</bean>
+	
+	
 </beans>

@@ -18,4 +18,13 @@
     <select id="queryUserByName" resultMap="userMapper">
         SELECT * FROM act_sys_user WHERE username = #{userName}
     </select>
+    
+    <!-- 将查询结果映射成map，key为列名，value为列值 -->
+    <select id="queryUserById" resultType="hashmap">
+        SELECT * FROM act_sys_user WHERE id = #{id}    
+    </select>
+    
+    <select id="queryAllUser" resultType="cn.say.anything.bean.BackendUser">
+    	SELECT * FROM act_sys_user
+    </select>
 </mapper>

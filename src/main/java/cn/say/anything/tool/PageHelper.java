@@ -47,10 +47,12 @@ public class PageHelper implements Interceptor {
 		if (target instanceof StatementHandler) {
 			StatementHandler handler = (StatementHandler) target;
 			MetaObject metaObject = SystemMetaObject.forObject(handler);
+			// 分离代理对象链(由于目标类可能被多个拦截器拦截，从而形成多次代理，通过下面的两次循环可以分离出最原始的的目标类)
 			while (metaObject.hasGetter("h")) {
 				Object object = metaObject.getValue("h");
 				metaObject = SystemMetaObject.forObject(object);
 			}
+			// 分离最后一个代理对象的目标类
 			while (metaObject.hasGetter("target")) {
 				Object object = metaObject.getValue("target");
 				metaObject = SystemMetaObject.forObject(object);
