@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import app.memory.bean.BackendUser;
 import app.memory.bean.Define;
+import app.memory.bean.QueryPageInfo;
 import app.memory.service.BackendUserService;
 import app.memory.tool.ResultCodeConstant;
 
@@ -22,9 +23,28 @@ import app.memory.tool.ResultCodeConstant;
 public class BackendUserController extends CommonController {
 	@Autowired
 	private BackendUserService userService;
-
+	
 	/**
 	 * 用户列表
+	 */
+	@RequestMapping(value = "/allusers")
+	@RequiresRoles(ADMIN_ROLE)
+	@ResponseBody
+	public String allUsers(
+			BackendUser user,
+			@RequestParam(value = "pageNum", required = false) String pageNum,
+			@RequestParam(value = "pageSize", required = false) String pageSize,
+			@RequestParam(value = "format", required = false, defaultValue = "json") String format,
+			@RequestParam(value = "cb", required = false) String callback) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<BackendUser> backendUsers= userService.queryAllBean();
+		map.put("users", backendUsers);
+		map.put("errorcode", ResultCodeConstant.SUCCESS);
+		return commonRender(map, format, callback);
+	}
+
+	/**
+	 * 分页用户列表
 	 */
 	@RequestMapping(value = "/users")
 	@RequiresRoles(ADMIN_ROLE)
@@ -43,9 +63,8 @@ public class BackendUserController extends CommonController {
 		if (pageSize == null || "".equals(pageSize)) {
 			pageSize = Define.PAGE_SIZE;
 		}
-
-		// List<BackendUser> backendUsers = userService.queryPageInfo(Integer.parseInt(pageNum), Integer.parseInt(pageSize), user);
-		List<BackendUser> backendUsers = userService.queryAllUser();
+		QueryPageInfo<BackendUser> pageInfo = userService.queryPageInfo(Integer.parseInt(pageNum), Integer.parseInt(pageSize), user);
+		List<BackendUser> backendUsers= pageInfo.subList(0, pageInfo.size());
 		map.put("users", backendUsers);
 		map.put("errorcode", ResultCodeConstant.SUCCESS);
 		return commonRender(map, format, callback);

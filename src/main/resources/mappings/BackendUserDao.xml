@@ -12,7 +12,7 @@
     </resultMap>  
 
     <select id="queryPageInfo" resultMap="userMapper">  
-        select * from act_sys_user limit #{pageNo, jdbcType=INTEGER} , #{pageSize, jdbcType=INTEGER}  
+        SELECT * FROM act_sys_user limit #{pageNo, jdbcType=INTEGER} , #{pageSize, jdbcType=INTEGER}  
     </select>  
     
     <select id="queryUserByName" resultMap="userMapper">
@@ -24,7 +24,7 @@
         SELECT * FROM act_sys_user WHERE id = #{id}    
     </select>
     
-    <select id="queryAllUser" resultType="app.memory.bean.BackendUser">
+    <select id="queryAllBean" resultType="app.memory.bean.BackendUser">
     	SELECT * FROM act_sys_user
     </select>
 </mapper>

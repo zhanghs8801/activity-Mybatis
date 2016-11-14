@@ -40,14 +40,14 @@ public class PermissionServiceImpl implements PermissionService{
 		return permDao.getPermissions(username);
 	}
 
-	@Override
-	public void addPermission(String username, String moudle_id) {
-		permDao.addPermission(username, moudle_id);
-	}
+//	@Override
+//	public void addPermission(String username, String moudle_id) {
+//		permDao.addPermission(username, moudle_id);
+//	}
 
-	@Override
-	public void deletePermission(String username, String moduleId) {
-		permDao.deletePermission(username, moduleId);
-	}
+//	@Override
+//	public void deletePermission(String username, String moduleId) {
+//		permDao.deletePermission(username, moduleId);
+//	}
 
 }

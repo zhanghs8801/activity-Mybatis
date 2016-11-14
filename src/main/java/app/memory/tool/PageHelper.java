@@ -36,13 +36,13 @@ import app.memory.bean.QueryPageInfo;
 @Intercepts({
 		@Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }),
 		@Signature(type = ResultSetHandler.class, method = "handleResultSets", args = { Statement.class })})
-public class PageHelper implements Interceptor {
+public class PageHelper<T> implements Interceptor {
 	private static Logger logger = Logger.getLogger(PageHelper.class);
+	private ThreadLocal<QueryPageInfo<T>> localPageInfo = new ThreadLocal<QueryPageInfo<T>>(); 
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object intercept(Invocation invocation) throws Throwable {
-		QueryPageInfo pageInfo = new QueryPageInfo();
 		Object target = invocation.getTarget();
 		if (target instanceof StatementHandler) {
 			StatementHandler handler = (StatementHandler) target;
@@ -64,6 +64,11 @@ public class PageHelper implements Interceptor {
 				// 如果不是分页查询，则跳过
 				return invocation.proceed();
 			}
+			QueryPageInfo<T> pageInfo = localPageInfo.get();
+			if (pageInfo == null) {
+				pageInfo = new QueryPageInfo<T>();
+				localPageInfo.set(pageInfo);
+			}
 			BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
 			ParamMap<Object> paramMap = (ParamMap<Object>) boundSql.getParameterObject();
 			int pageNO = (Integer) paramMap.get("pageNo");
@@ -71,17 +76,35 @@ public class PageHelper implements Interceptor {
 			pageInfo.setCurrentPage(pageNO);
 			pageInfo.setPageSize(pageSize);
 			String sql = boundSql.getSql();
-			String pageSql = buildPage(sql, pageInfo);
-			metaObject.setValue("delegate.boundSql.sql", pageSql);
 			Connection connection = (Connection) invocation.getArgs()[0];
-			setPageParameter(sql, connection, mappedStatement, boundSql, pageInfo);
+
+			getResults(sql, connection, mappedStatement, boundSql, pageInfo);
+			getTotalCount(sql, connection, mappedStatement, boundSql, pageInfo);
 			return invocation.proceed();
 		} else if (invocation.getTarget() instanceof ResultSetHandler) {
 			Object result = invocation.proceed();
-			pageInfo.setResults((List<Object>) result);
-			return result;
+			QueryPageInfo<T> pageInfo = localPageInfo.get();
+			if (pageInfo == null) {
+				return result;
+			}
+			pageInfo.clear();
+			// 如果是分页查询的，返回QueryPageInfo对象
+			pageInfo.addAll((List<T>) result);
+			return pageInfo;
 		}
 		return null;
+	}
+	
+	private String buildPage(String sql, QueryPageInfo<T> page) {
+		StringBuilder pageSql = new StringBuilder(100);
+		sql = sql.substring(0, sql.indexOf(" limit"));
+		pageSql.append(sql);
+		int beginrow = (page.getCurrentPage() - 1) * page.getPageSize();
+		if (beginrow < 0) {
+			beginrow = 0;
+		}
+		pageSql.append(" limit " + beginrow + ", " + page.getPageSize());
+		return pageSql.toString();
 	}
 
 	@Override
@@ -89,18 +112,35 @@ public class PageHelper implements Interceptor {
 		//只拦截StatementHandler与ResultSetHandler两种类型，见方法签名
 		if (target instanceof StatementHandler || target instanceof ResultSetHandler) {
 			return Plugin.wrap(target, this);
-		} else {
-			return target;
 		}
+		return target;
 	}
-
-	public String buildPage(String sql, QueryPageInfo page) {
-		StringBuilder pageSql = new StringBuilder(100);
-		sql = sql.substring(0, sql.indexOf("limit"));
-		String beginrow = String.valueOf((page.getCurrentPage() - 1) * page.getPageSize());
-		pageSql.append(sql);
-		pageSql.append(" limit " + beginrow + "," + page.getPageSize());
-		return pageSql.toString();
+	
+	/**
+	 * 获取分页查询的数据
+	 * @param sql
+	 * @param connection
+	 * @param mappedStatement
+	 * @param boundSql
+	 * @param pageInfo
+	 */
+	private void getResults(String sql, Connection connection, MappedStatement mappedStatement, BoundSql boundSql, QueryPageInfo<T> pageInfo) {
+		String pageSql = buildPage(sql, pageInfo);
+		PreparedStatement pageResultStmt = null;
+		try {
+			System.out.println(pageSql);
+			pageResultStmt = connection.prepareStatement(pageSql);
+			BoundSql pageResultBS = new BoundSql(mappedStatement.getConfiguration(), pageSql, null, null);
+			setParameters(pageResultStmt, mappedStatement, pageResultBS, null);
+		} catch (SQLException e) {
+			logger.error(e);
+		} finally {
+			try {
+				pageResultStmt.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
 	}
 
 	/**
@@ -112,14 +152,15 @@ public class PageHelper implements Interceptor {
 	 * @param boundSql
 	 * @param page
 	 */
-	private void setPageParameter(String sql, Connection connection, MappedStatement mappedStatement, BoundSql boundSql, QueryPageInfo page) {
+	private void getTotalCount(String sql, Connection connection, MappedStatement mappedStatement, BoundSql boundSql, QueryPageInfo<T> page) {
+		sql = sql.substring(0, sql.indexOf(" limit"));
 		String countSql = "select count(0) from (" + sql + ") as total";//必须加上别名，否则会报Every derived table must have its own alias错误
 		PreparedStatement countStmt = null;
 		ResultSet rs = null;
 		try {
 			countStmt = connection.prepareStatement(countSql);
-			BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
-			setParameters(countStmt, mappedStatement, countBS, boundSql.getParameterObject());
+			BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql, null, null);
+			setParameters(countStmt, mappedStatement, countBS, null);
 			rs = countStmt.executeQuery();
 			int totalCount = 0;
 			if (rs.next()) {
@@ -127,32 +168,23 @@ public class PageHelper implements Interceptor {
 			}
 			page.setTotalCount(totalCount);
 			int totalPage = totalCount / page.getPageSize() + ((totalCount % page.getPageSize() == 0) ? 0 : 1);
-			page.setPageSize(totalPage);
+			page.setTotalPage(totalPage);
 		} catch (SQLException e) {
-			logger.error("Ignore this exception", e);
+			logger.error(e);
 		} finally {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				logger.error("Ignore this exception", e);
+				logger.error(e);
 			}
 			try {
 				countStmt.close();
 			} catch (SQLException e) {
-				logger.error("Ignore this exception", e);
+				logger.error(e);
 			}
 		}
 	}
 
-	/**
-	 * 代入参数值
-	 * 
-	 * @param ps
-	 * @param mappedStatement
-	 * @param boundSql
-	 * @param parameterObject
-	 * @throws SQLException
-	 */
 	private void setParameters(PreparedStatement ps, MappedStatement mappedStatement, BoundSql boundSql, Object parameterObject) throws SQLException {
 		ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
 		parameterHandler.setParameters(ps);

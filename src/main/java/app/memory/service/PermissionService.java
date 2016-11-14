@@ -12,7 +12,7 @@ public interface PermissionService {
 
 	public List<String> getPermissions(String username);
 
-	public void addPermission(String username, String moudle_id);
+//	public void addPermission(String username, String moudle_id);
 
-	public void deletePermission(String username, String moduleId);
+//	public void deletePermission(String username, String moduleId);
 }

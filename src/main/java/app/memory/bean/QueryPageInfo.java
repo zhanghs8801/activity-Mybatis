@@ -1,13 +1,14 @@
 package app.memory.bean;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class QueryPageInfo {
+public class QueryPageInfo<T> extends ArrayList<T>{
+	private static final long serialVersionUID = -7711765939123046279L;
 	private int currentPage;
 	private int pageSize;
 	private int startIndex;
 	private long totalCount;
-	private List<Object> results;
+	private int totalPage;
 
 	public int getCurrentPage() {
 		return currentPage;
@@ -40,12 +41,12 @@ public class QueryPageInfo {
 	public void setTotalCount(long totalCount) {
 		this.totalCount = totalCount;
 	}
-
-	public List<Object> getResults() {
-		return results;
+	
+	public int getTotalPage() {
+		return totalPage;
 	}
-
-	public void setResults(List<Object> results) {
-		this.results = results;
+	
+	public void setTotalPage(int totalPage) {
+		this.totalPage = totalPage;
 	}
 }

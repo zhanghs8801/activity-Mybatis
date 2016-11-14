@@ -2,20 +2,23 @@ package app.memory.service;
 
 import java.util.List;
 
-import app.memory.bean.QueryPageBean;
 import app.memory.bean.QueryPageInfo;
 
 public interface BaseService<T> {
-
-	public List<T> queryPageInfo(int pageNo, int pageSize, T bean);
+	/**
+	 * 查询所有实体对象
+	 * @return
+	 */
+	public List<T> queryAllBean();
 	/**
 	 * 分页查询
 	 * 
-	 * @param queryPageInfo
-	 * @param t
+	 * @param pageNo
+	 * @param pageSize
+	 * @param bean
 	 * @return
 	 */
-	public QueryPageBean<T> queryPageInfo(QueryPageInfo queryPageInfo, T bean);
+	public QueryPageInfo<T> queryPageInfo(int pageNo, int pageSize, T bean);
 
 	/**
 	 * 根据id查询实体对象
