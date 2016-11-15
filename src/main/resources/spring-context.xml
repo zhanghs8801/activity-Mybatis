@@ -11,8 +11,8 @@
     	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
    </context:component-scan>
-    <!-- 用户服务 -->
     <import resource="spring-mvc.xml"/>
     <import resource="spring-data.xml"/>
+    <!-- <import resource="spring-redis.xml"/> -->
     <import resource="shiro.xml"/>
 </beans>
