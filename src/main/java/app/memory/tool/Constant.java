@@ -25,4 +25,9 @@ public class Constant {
 	public static final String FLS_PERMISSION_KEY = "FLS";
 	public static final String MESSAGE_PERMISSION_KEY = "MESSAGE";
 	public static final String COMMENT_PERMISSION_KEY = "COMMENT";
+	
+	/**
+	 * Redis默认的缓存有效期
+	 */
+	public static final int REDISEXPIRETIME = 1800;
 }
